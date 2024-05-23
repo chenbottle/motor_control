@@ -17,8 +17,8 @@
 
 void EtherCAT_Transmit();
 void EtherCAT_Init(char *ifname);
-void EtherCAT_Run(motor_command *m_command);
-void EtherCAT_Command_Set(motor_command *m_command);
+void EtherCAT_Run(motor_command **m_command);
+void EtherCAT_Command_Set(motor_command **m_command);
 EtherCAT_Msg *EtherCAT_Data_Get();
 
 #endif // PROJECT_RT_ETHERCAT_H

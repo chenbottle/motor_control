@@ -27,12 +27,14 @@ public:
     m_control();   
     ~m_control();  
     void get_data(EtherCAT_Msg *_msg);
-    motor_command* move();
+    motor_command** move();
 
     OD_Motor_Msg m_body[6];    
 private:
-    Motor_Send_Msg msm_[6];
-    motor_command M_com[6];
+    int row = 6;
+    int col = 6;
+    Motor_Send_Msg **msm_;
+    motor_command **M_com;
        
     int motor_id; 
     EtherCAT_Msg _ReceiveData[4];

@@ -21,9 +21,9 @@ public:
         _ack = 1; 
         cur = 0;        
     }
-    void poi_control(int slave, int id,float poi_,float vel_,float cur_max_);
-    void vel_control(int slave, int id,float vel_,float cur_max_);
-    void tor_control(int slave, int id,float tor_);
+    void poi_control(int id,float poi_,float vel_,float cur_max_);
+    void vel_control(int id,float vel_,float cur_max_);
+    void tor_control(int id,float tor_);
     int slave;
     int m_id;
     int pvt;
@@ -35,6 +35,6 @@ public:
     int cur;       
 };
 
-void command_set_toc(Motor_Send_Msg *msm,motor_command *m_command);
+void command_set_toc(Motor_Send_Msg msm,motor_command &m_command);
 #endif
 #endif

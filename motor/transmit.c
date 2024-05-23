@@ -21,7 +21,7 @@ uint64_t num;
 
 EtherCAT_Msg* EtherCAT_Data_Get();
 
-void EtherCAT_Command_Set(motor_command *m_command);
+void EtherCAT_Command_Set(motor_command **m_command);
 
 static void degraded_handler()
 {
@@ -279,7 +279,7 @@ EtherCAT_Msg Tx_Message[4];
  * @description:
  * @return {*}
  */
-void EtherCAT_Run(motor_command *m_command)
+void EtherCAT_Run(motor_command **m_command)
 {
     if (wkc_err_iteration_count > K_ETHERCAT_ERR_PERIOD)
     {
@@ -332,30 +332,33 @@ EtherCAT_Msg *EtherCAT_Data_Get()
  * @return {*}
  * @author: Kx Zhang
  */
-void EtherCAT_Command_Set(motor_command *m_command)
+void EtherCAT_Command_Set(motor_command **m_command)
 {
-    int num = sizeof(m_command);
+    int row = sizeof(m_command)/sizeof(m_command[0]);
+    int col = sizeof(m_command[0])/sizeof(m_command[0][0]);
     // for (int i = 0;i < num;i++){
     //     // printf("slave:%d\tid:%d\tpoi:%f\tvel:%f\t",m_command[i].slave,m_command[i].m_id,m_command[i].poi,m_command[i].vel);
     // }
-    for (int i = 0;i < num;i++){
-        switch(m_command[i].pvt)
-        {
-            case 0:
-                set_motor_position(&Tx_Message[m_command[i].slave], 1, m_command[i].m_id, m_command[i].poi, m_command[i].vel, 
-                m_command[i].cur_max, m_command[i]._ack);
-                // printf("id:%d\tpoi:%f\n",m_command[i].m_id,m_command[i].poi);
-                break;
-            case 1:
-                set_motor_speed(&Tx_Message[m_command[i].slave], 1, m_command[i].m_id, m_command[i].vel, m_command[i].cur_max,
-                m_command[i]._ack);
-                // printf("id:%d\tspeed:%f\n",m_command[i].m_id,m_command[i].vel);
-                break;
-            case 2:
-                set_motor_cur_tor(&Tx_Message[m_command[i].slave], 1, m_command[i].m_id, m_command[i].tor, 1, m_command[i]._ack);
-                break;
-            default:
-                break;
+    for(int i = 0; i < row; i++){
+        for(int j = 0; j < col; j++){
+            switch(m_command[i][j].pvt)
+            {
+                case 0:
+                    set_motor_position(&Tx_Message[m_command[i][j].slave], 1, m_command[i][j].m_id, m_command[i][j].poi, m_command[i][j].vel, 
+                    m_command[i][j].cur_max, m_command[i][j]._ack);
+                    // printf("id:%d\tpoi:%f\n",m_command[i].m_id,m_command[i].poi);
+                    break;
+                case 1:
+                    set_motor_speed(&Tx_Message[m_command[i][j].slave], 1, m_command[i][j].m_id, m_command[i][j].vel, m_command[i][j].cur_max,
+                    m_command[i][j]._ack);
+                    // printf("id:%d\tspeed:%f\n",m_command[i].m_id,m_command[i].vel);
+                    break;
+                case 2:
+                    set_motor_cur_tor(&Tx_Message[m_command[i][j].slave], 1, m_command[i][j].m_id, m_command[i][j].tor, 1, m_command[i][j]._ack);
+                    break;
+                default:
+                    break;
+            }
         }
     }
     for (int slave = 0; slave < ec_slavecount; ++slave)

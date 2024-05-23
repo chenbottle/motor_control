@@ -31,11 +31,22 @@ OD_Motor_Msg rv_motor_msg[6];
 // }
 
 m_control::m_control(){
-    
+    msm_ = new Motor_Send_Msg*[row];
+    M_com = new motor_command*[row];
+    for(int i = 0; i < row; i++){
+        *(msm_ + 1) = new Motor_Send_Msg[col];
+        *(M_com + 1) = new motor_command[col];
+    }
+    for(int i = 0; i < row; i++){
+        for(int j = 0; j < col; j++){
+            msm_[i][j].slave = i;
+        }
+    }
 }
 
 m_control::~m_control(){
-   
+   delete []msm_;
+   delete []M_com;
 }
 
 void m_control::get_data(EtherCAT_Msg *_msg)
@@ -65,7 +76,7 @@ void m_control::get_data(EtherCAT_Msg *_msg)
     }     
 }
 
-motor_command* m_control::move(){  
+motor_command** m_control::move(){  
     //力矩控制
     // msm_[0].cur = (int16_t)(0*819.2);
     // msm_[1].cur = (int16_t)(0*819.2); 
@@ -82,12 +93,15 @@ motor_command* m_control::move(){
     // msm_[5].poi_control(5,0,50,500);
 
     //速度控制
-    msm_[0].vel_control(0,1,-5,500);
-    msm_[1].vel_control(1,1,10,500);
-    msm_[2].vel_control(0,2,5,500);
+    msm_[0][0].vel_control(1,-5,500);
+    msm_[0][1].vel_control(1,10,500);
+    msm_[1][1].vel_control(2,5,500);
     // msm_[4].vel_control(4,50,500);
     // msm_[5].vel_control(5,50,500);
-
-    command_set_toc(msm_,M_com);
+    for(int i = 0; i < row; i++){
+        for(int j = 0; j < col; j++){
+            command_set_toc(msm_[i][j],M_com[i][j]);
+        }
+    }    
     return M_com;
 }
