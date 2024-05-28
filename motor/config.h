@@ -32,7 +32,6 @@ typedef struct
 } EtherCAT_Msg;
 
 typedef struct{
-    int slave;
     int m_id;
     int pvt;
     float poi;
@@ -41,6 +40,11 @@ typedef struct{
     float cur_max;
     int _ack;  
     int cur;  
+} motor_msg;
+
+typedef struct{
+    int slave;
+    motor_msg Motor_Msg[6];
 } motor_command;
 
 #pragma pack(pop)

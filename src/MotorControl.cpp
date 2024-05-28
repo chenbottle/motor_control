@@ -31,17 +31,16 @@ OD_Motor_Msg rv_motor_msg[6];
 // }
 
 m_control::m_control(){
-    msm_ = new Motor_Send_Msg*[row];
-    M_com = new motor_command*[row];
+    // row = get_ec_slavecount();
+    msm_ = new Motor_Send_Msg[row];
+    M_com = new motor_command[row];
+    m_body = new OD_Motor_Msg*[row];
     for(int i = 0; i < row; i++){
-        *(msm_ + 1) = new Motor_Send_Msg[col];
-        *(M_com + 1) = new motor_command[col];
+        *(m_body + 1) = new OD_Motor_Msg[col];
     }
-    for(int i = 0; i < row; i++){
-        for(int j = 0; j < col; j++){
-            msm_[i][j].slave = i;
-        }
-    }
+    // for(int i = 0; i < row; i++){
+    //     msm_[i].M_Slave.slave = i;
+    // }
 }
 
 m_control::~m_control(){
@@ -51,21 +50,22 @@ m_control::~m_control(){
 
 void m_control::get_data(EtherCAT_Msg *_msg)
 {   
-    memcpy(_ReceiveData,_msg,sizeof(_ReceiveData));
-    for (int slave = 0; slave < 6;slave++){
-        for (int i = 0;i < 6;i++){              
-            if(_ReceiveData[slave].motor[i].id < 7){                 
-                motor_id = _ReceiveData[slave].motor[i].id; 
+    // memcpy(_ReceiveData,_msg,sizeof(_ReceiveData));
+    int row_msg = sizeof(_msg)/sizeof(_msg[0]);
+    printf("row:%d\trow_msg:%d\n",row,row_msg);
+    for (int slave = 0; slave < row_msg;slave++){
+        for (int i = 0;i < col;i++){              
+            if(_msg[slave].motor[i].id < 7){                 
                 // printf("id:%d\t",_ReceiveData[slave].motor[i].id);
-                m_body[motor_id].motor_id = motor_id;                
-                m_body[motor_id].angle_actual_int = _ReceiveData[slave].motor[i].data[1] << 8 | _ReceiveData[slave].motor[i].data[2];
-                m_body[motor_id].speed_actual_int = _ReceiveData[slave].motor[i].data[3] << 4 | (_ReceiveData[slave].motor[i].data[4] & 0xF0) >> 4;
-                m_body[motor_id].current_actual_int = (_ReceiveData[slave].motor[i].data[4] & 0x0F) << 8 | _ReceiveData[slave].motor[i].data[5];
+                m_body[slave][i].motor_id = _msg[slave].motor[i].id;                
+                m_body[slave][i].angle_actual_int = _msg[slave].motor[i].data[1] << 8 | _msg[slave].motor[i].data[2];
+                m_body[slave][i].speed_actual_int = _msg[slave].motor[i].data[3] << 4 | (_msg[slave].motor[i].data[4] & 0xF0) >> 4;
+                m_body[slave][i].current_actual_int = (_msg[slave].motor[i].data[4] & 0x0F) << 8 | _msg[slave].motor[i].data[5];
 
-                m_body[motor_id].angle_actual_rad = uint_to_float(m_body[motor_id].angle_actual_int, POS_MIN, POS_MAX, 16);
-                m_body[motor_id].speed_actual_rad = uint_to_float(m_body[motor_id].speed_actual_int, SPD_MIN, SPD_MAX, 12);
-                m_body[motor_id].current_actual_float = uint_to_float(m_body[motor_id].current_actual_int, I_MIN_10020, I_MAX_10020, 12);
-                m_body[motor_id].temperature = (_ReceiveData->motor[i].data[6] - 50) / 2;                     
+                m_body[slave][i].angle_actual_rad = uint_to_float(m_body[slave][i].angle_actual_int, POS_MIN, POS_MAX, 16);
+                m_body[slave][i].speed_actual_rad = uint_to_float(m_body[slave][i].speed_actual_int, SPD_MIN, SPD_MAX, 12);
+                m_body[slave][i].current_actual_float = uint_to_float(m_body[slave][i].current_actual_int, I_MIN_10020, I_MAX_10020, 12);
+                m_body[slave][i].temperature = (_msg->motor[i].data[6] - 50) / 2;                     
             }             
             // for(int j = 0;j < 8; j++){
             //     // cout << "data[" << i << "]:" << hex << _ReceiveData[slave].motor[i].data[j] << "\t";
@@ -73,10 +73,24 @@ void m_control::get_data(EtherCAT_Msg *_msg)
             // }
             // cout << endl;
         }
-    }     
+    } 
+    motor_data_cout();    
 }
 
-motor_command** m_control::move(){  
+void m_control::motor_data_cout(){
+    for(int i = 0; i < row; i++){
+        cout << "slave[" << i << "]:" << endl;
+        for(int j = 0; j < col; j++){
+            cout << "id:" << m_body[i][j].motor_id << "\t";
+            cout << "poi:" << m_body[i][j].angle_actual_rad << "\t";
+            cout << "vel:" << m_body[i][j].speed_actual_rad << "\t";
+            cout << "current:" << m_body[i][j].current_actual_float << "\t";
+            cout << "temperature:" << m_body[i][j].temperature << endl;
+        }
+    }
+}
+
+motor_command* m_control::move(){  
     //力矩控制
     // msm_[0].cur = (int16_t)(0*819.2);
     // msm_[1].cur = (int16_t)(0*819.2); 
@@ -93,15 +107,13 @@ motor_command** m_control::move(){
     // msm_[5].poi_control(5,0,50,500);
 
     //速度控制
-    msm_[0][0].vel_control(1,-5,500);
-    msm_[0][1].vel_control(1,10,500);
-    msm_[1][1].vel_control(2,5,500);
+    msm_[0].vel_control(2,-5,500);
+    // msm_[0][1].vel_control(1,10,500);
+    msm_[0].vel_control(1,5,500);
     // msm_[4].vel_control(4,50,500);
     // msm_[5].vel_control(5,50,500);
     for(int i = 0; i < row; i++){
-        for(int j = 0; j < col; j++){
-            command_set_toc(msm_[i][j],M_com[i][j]);
-        }
+        command_set_toc(msm_[i],M_com[i]);
     }    
     return M_com;
 }

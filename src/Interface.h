@@ -25,20 +25,18 @@ public:
 
     void RecvFromDriver();
     void SendDriver(); 
-private:  
-
-    float ConvertByte2Float(unsigned char *pByte);
-
-    volatile bool followMode = false;
+private:     
 
     //Driver
-    EtherCAT_Msg _ReceiveData[4];    // 驱动器的反馈数据    
-    Motor_Send_Msg _msm[6];    // 发送给驱动器的指令
+    // EtherCAT_Msg _ReceiveData[4];    // 驱动器的反馈数据    
+    // Motor_Send_Msg _msm[6];    // 发送给驱动器的指令
     //************************************************************//
 
     m_control _m_control;
 
     std::mutex IMUData_mutex, remote_mutex, driver_mutex, rece_driver_mutex;
 };
+
+float ConvertByte2Float(unsigned char *pByte);
 
 #endif

@@ -673,3 +673,7 @@ void RV_can_data_repack(EtherCAT_Msg *RxMessage, uint8_t comm_mode, uint8_t slav
         }
     }
 }
+
+int get_ec_slavecount(){
+    return ec_slavecount;
+}

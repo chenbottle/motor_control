@@ -84,4 +84,6 @@ void RV_can_data_repack(EtherCAT_Msg *RxMessage, uint8_t comm_mode, uint8_t slav
 
 int float_to_uint(float x, float x_min, float x_max, int bits);
 
+int get_ec_slavecount();
+
 #endif

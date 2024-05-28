@@ -27,16 +27,13 @@ public:
     m_control();   
     ~m_control();  
     void get_data(EtherCAT_Msg *_msg);
-    motor_command** move();
-
-    OD_Motor_Msg m_body[6];    
+    motor_command* move();
+    void motor_data_cout();   
 private:
     int row = 6;
     int col = 6;
-    Motor_Send_Msg **msm_;
-    motor_command **M_com;
-       
-    int motor_id; 
-    EtherCAT_Msg _ReceiveData[4];
+    Motor_Send_Msg *msm_;
+    motor_command *M_com;
+    OD_Motor_Msg **m_body; 
 };
 #endif//TWOWHEELLEG_H
