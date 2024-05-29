@@ -29,7 +29,7 @@ void Interface::SendDriver(){
 void Interface::RecvFromDriver()
 {
     // rece_driver_mutex.lock();
-    // _m_control.get_data(EtherCAT_Data_Get());
+    _m_control.get_data(EtherCAT_Data_Get());
     // rece_driver_mutex.unlock();
 }
 

@@ -293,6 +293,15 @@ void EtherCAT_Run(motor_command *m_command)
     }
     // send
     EtherCAT_Command_Set(m_command);
+    // printf("------------------------------------\n");
+    // for(int i = 0; i < ec_slavecount; i++){
+    //     printf("TX_slzve:%d\t",i);
+    //     for(int j = 0; j < 6; j++){
+    //         printf("motor_id[%d].data[0]:%d\t",Tx_Message[i].motor[j].id,Tx_Message[i].motor[j].data[0]);
+    //     } 
+    //     printf("\n");       
+    // }
+    // printf("------------------------------------\n");
     ec_send_processdata();
     // receive
     wkc = ec_receive_processdata(EC_TIMEOUTRET);
@@ -334,30 +343,35 @@ EtherCAT_Msg *EtherCAT_Data_Get()
  */
 void EtherCAT_Command_Set(motor_command *m_command)
 {
-    int row = sizeof(m_command)/sizeof(m_command[0]);
-    printf("size0fcom:%d\n",sizeof(m_command));
-    printf("sizeofcom[0]:%d\n",sizeof(m_command[0]));
-    printf("row:%d\n",row);
     int col = 6;
     // for (int i = 0;i < num;i++){
     //     // printf("slave:%d\tid:%d\tpoi:%f\tvel:%f\t",m_command[i].slave,m_command[i].m_id,m_command[i].poi,m_command[i].vel);
     // }
-    for(int i = 0; i < 6; i++){
+    for(int i = 0; i < ec_slavecount; i++){
         for(int j = 0; j < col; j++){
             switch(m_command[i].Motor_Msg[j].pvt)
             {
                 case 0:
-                    set_motor_position(&Tx_Message[m_command[i].slave], 1, m_command[i].Motor_Msg[j].m_id, m_command[i].Motor_Msg[j].poi, m_command[i].Motor_Msg[j].vel, 
+                    set_motor_position(&Tx_Message[m_command[i].slave], m_command[i].Motor_Msg[j].m_id, 
+                    m_command[i].Motor_Msg[j].m_id, m_command[i].Motor_Msg[j].poi, m_command[i].Motor_Msg[j].vel, 
                     m_command[i].Motor_Msg[j].cur_max, m_command[i].Motor_Msg[j]._ack);
                     // printf("id:%d\tpoi:%f\n",m_command[i].m_id,m_command[i].poi);
                     break;
                 case 1:
-                    set_motor_speed(&Tx_Message[m_command[i].slave], 1, m_command[i].Motor_Msg[j].m_id, m_command[i].Motor_Msg[j].vel, m_command[i].Motor_Msg[j].cur_max,
+                    set_motor_speed(&Tx_Message[m_command[i].slave], m_command[i].Motor_Msg[j].m_id, 
+                    m_command[i].Motor_Msg[j].m_id, m_command[i].Motor_Msg[j].vel, m_command[i].Motor_Msg[j].cur_max,
                     m_command[i].Motor_Msg[j]._ack);
-                    printf("id:%d\tspeed:%f\n",m_command[i].Motor_Msg[j].m_id,m_command[i].Motor_Msg[j].vel);
+                    // printf("id:%d\tspeed:%f\n",m_command[i].Motor_Msg[j].m_id,m_command[i].Motor_Msg[j].vel);
+                    // printf("slave:%d\t",m_command[i].slave);
                     break;
                 case 2:
-                    set_motor_cur_tor(&Tx_Message[m_command[j].slave], 1, m_command[i].Motor_Msg[j].m_id, m_command[i].Motor_Msg[j].tor, 1, m_command[i].Motor_Msg[j]._ack);
+                    set_motor_cur_tor(&Tx_Message[m_command[i].slave], m_command[i].Motor_Msg[j].m_id, 
+                    m_command[i].Motor_Msg[j].m_id, m_command[i].Motor_Msg[j].tor, 1, m_command[i].Motor_Msg[j]._ack);
+                    break;
+                case 3:
+                    send_motor_ctrl_cmd(&Tx_Message[m_command[i].slave], m_command[i].Motor_Msg[j].m_id, 
+                    m_command[i].Motor_Msg[j].m_id, m_command[i].Motor_Msg[j].KP, m_command[i].Motor_Msg[j].KD, 
+                    m_command[i].Motor_Msg[j].poi, m_command[i].Motor_Msg[j].vel, m_command[i].Motor_Msg[j].tor);
                     break;
                 default:
                     break;
@@ -386,9 +400,9 @@ void EtherCAT_Command_Set(motor_command *m_command)
             // send_motor_ctrl_cmd(&Tx_Message[slave], 6,5, 0, 0, 0, 0, 0);
 
             // set_motor_position(&Tx_Message[slave], 1,2, 360, 50, 100, 2);
-            // set_motor_speed(&Tx_Message[slave], 2,1, 5, 500, 2);
-            // set_motor_speed(&Tx_Message[slave], 1,2, 5, 500, 2);
-            // set_motor_cur_tor(&Tx_Message[slave], 1,2, 500, 0, 0);
+            // set_motor_speed(&Tx_Message[0], 1,1, 5, 500, 2);
+            // set_motor_speed(&Tx_Message[1], 2,2, 5, 500, 2);
+            // set_motor_cur_tor(&Tx_Message[slave], 1,2, 0.5*100, 1, 1);
             // get_motor_parameter(&Tx_Message[slave],1, 2, 2);
 
             EtherCAT_Msg *slave_dest = (EtherCAT_Msg *)(ec_slave[slave + 1].outputs);

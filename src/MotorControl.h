@@ -34,6 +34,7 @@ private:
     int col = 6;
     Motor_Send_Msg *msm_;
     motor_command *M_com;
-    OD_Motor_Msg **m_body; 
+    // OD_Motor_Msg **m_body; 
+    OD_Motor_Msg m_body[6][6];
 };
 #endif//TWOWHEELLEG_H

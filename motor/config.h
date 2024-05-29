@@ -39,7 +39,9 @@ typedef struct{
     float tor;
     float cur_max;
     int _ack;  
-    int cur;  
+    int cur; 
+    float KP;
+    float KD; 
 } motor_msg;
 
 typedef struct{
