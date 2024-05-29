@@ -37,7 +37,11 @@ int main()
     WSH_LOOP::LoopFunction loop_ReceFromDriver("loop_ReceFromDriver",
                                 0.002, boost::bind(&Interface::RecvFromDriver, &interface)); 
     WSH_LOOP::LoopFunction loop_SendDriver("loop_SendDriver",
-                                0.002, boost::bind(&Interface::SendDriver, &interface));                          
+                                0.002, boost::bind(&Interface::SendDriver, &interface));   
+    WSH_LOOP::LoopFunction loop_ReceFromIMU("loop_ReceFromIMU",
+                                0.002, boost::bind(&Interface::getIMUdata, &interface));                        
+
+    loop_ReceFromIMU.start();
 
     loop_ReceFromDriver.start();
 

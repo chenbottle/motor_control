@@ -7,6 +7,7 @@
 #include "config_main.h"
 #include <time.h>
 #include <numeric>
+#include "imu_get_data.h"
 
 extern "C" {
 #include "config.h"
@@ -27,9 +28,14 @@ public:
     m_control();   
     ~m_control();  
     void get_data(EtherCAT_Msg *_msg);
-    motor_command* move();
-    void motor_data_cout();   
+    motor_command* move(IMUState* _imu);
+    void motor_data_cout();  
+    void IMU_data_cout(); 
 private:
+    //IMU
+    IMUState* imu;
+
+    //motor
     int row = 6;
     int col = 6;
     Motor_Send_Msg *msm_;

@@ -10,6 +10,7 @@ Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 #include "config_main.h"
 #include <iostream>
 #include "MotorControl.h"
+#include "imu_get_data.h"
 
 extern "C" {
 #include "config.h"
@@ -25,12 +26,15 @@ public:
 
     void RecvFromDriver();
     void SendDriver(); 
+    void getIMUdata();
 private:     
 
     //Driver
     // EtherCAT_Msg _ReceiveData[4];    // 驱动器的反馈数据    
     // Motor_Send_Msg _msm[6];    // 发送给驱动器的指令
     //************************************************************//
+
+    IMU imu;
 
     m_control _m_control;
 

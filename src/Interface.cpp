@@ -14,7 +14,7 @@
 // EtherCAT_Msg Tx_Message[SLAVE_NUMBER];
 
 Interface::Interface() {  
-
+    // imu.initIMU();  
 }
 
 Interface::~Interface() {
@@ -23,7 +23,7 @@ Interface::~Interface() {
 
 void Interface::SendDriver(){               
     // memcpy(msm_motor , twl_robot.move() , sizeof(msm_motor));             
-    EtherCAT_Run(_m_control.move());   
+    EtherCAT_Run(_m_control.move(&imu.imuData));   
 }
 
 void Interface::RecvFromDriver()
@@ -33,16 +33,20 @@ void Interface::RecvFromDriver()
     // rece_driver_mutex.unlock();
 }
 
-// 将4个字节的char转为float
-float ConvertByte2Float(unsigned char *pByte){
-    float floatVariable;
-    unsigned char i;
-    void *pf;
-    pf = &floatVariable;
-
-    for (i = 0; i < 4; i++) {
-        *((unsigned char *) pf + i) = *(pByte + i);
-    }
-
-    return floatVariable;
+void Interface::getIMUdata(){
+    // imu.imuGet();
 }
+
+// // 将4个字节的char转为float
+// float ConvertByte2Float(unsigned char *pByte){
+//     float floatVariable;
+//     unsigned char i;
+//     void *pf;
+//     pf = &floatVariable;
+
+//     for (i = 0; i < 4; i++) {
+//         *((unsigned char *) pf + i) = *(pByte + i);
+//     }
+
+//     return floatVariable;
+// }

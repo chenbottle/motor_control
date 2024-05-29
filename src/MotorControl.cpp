@@ -100,7 +100,8 @@ void m_control::get_data(EtherCAT_Msg *_msg){
             // cout << endl;
         }
     } 
-    motor_data_cout();    
+    motor_data_cout();  
+    IMU_data_cout();  
 }
 
 void m_control::motor_data_cout(){
@@ -116,7 +117,12 @@ void m_control::motor_data_cout(){
     }
 }
 
-motor_command* m_control::move(){  
+void m_control::IMU_data_cout(){
+    // imu->write();
+}
+
+motor_command* m_control::move(IMUState* _imu){  
+    this->imu = _imu;
     row = ec_slavecount;
     //力位混控
     // msm_[0].tor_poi_control(2, 0, 0, 0, 0, 0.05);

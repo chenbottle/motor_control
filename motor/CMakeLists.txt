@@ -1,8 +1,8 @@
 include_directories(
-        ../thirdparty/soem
-        ../thirdparty/osal
-        ../thirdparty/osal/linux
-        ../thirdparty/oshw/linux
+        ../thirdparty/SOEM/soem
+        ../thirdparty/SOEM/osal
+        ../thirdparty/SOEM/osal/linux
+        ../thirdparty/SOEM/oshw/linux
         ./
 )
 
