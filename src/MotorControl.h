@@ -8,6 +8,9 @@
 #include <time.h>
 #include <numeric>
 #include "imu_get_data.h"
+#include <lcm/lcm-cpp.hpp>
+#include "lcm-types/cpp/imu_data.hpp"
+#include "lcm-types/cpp/motor_data.hpp"
 
 extern "C" {
 #include "config.h"
@@ -31,6 +34,7 @@ public:
     motor_command* move(IMUState* _imu);
     void motor_data_cout();  
     void IMU_data_cout(); 
+    void record_lcm_motor(motor_data* _motor_data);
 private:
     //IMU
     IMUState* imu;

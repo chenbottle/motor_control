@@ -1,0 +1,19 @@
+//package exlcm;
+struct imu_data
+{
+    double roll;
+    double yaw;
+    double pitch;
+    double acc[3];
+    double angle_speed[3];
+}
+
+struct motor_data
+{
+    float speed_actual_rad[6];
+    float angle_actual_rad[6];
+    int16_t motor_id[6];
+    int8_t temperature[6];
+    float current_actual_float[6];
+} 
+

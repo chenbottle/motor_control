@@ -7,6 +7,10 @@ set(CMAKE_EXE_LINKER_FLAGS " -no-pie")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 
+find_package(lcm REQUIRED)
+include(${LCM_USE_FILE})
+find_package(Boost REQUIRED)
+
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(
         thirdparty/SOEM/soem
@@ -32,4 +36,5 @@ target_link_libraries(master_stack_test
     -pthread   
     motor 
     imu
+    lcm
     soem)

@@ -1,0 +1,32 @@
+clc;
+clear;
+load("/home/chen/Documents/knowledge/2wl_control/result-data/matlab_log/data.mat");
+m = 200;
+subplot(2,1,1);
+plot(motor_data.current_actual_float(m:end,5));
+hold on;
+plot(-motor_data.current_actual_float(m:end,6));
+plot(motor_data.torque_hope(m:end,5)/1.4);
+plot(motor_data.torque_hope(m:end,6)/1.4);
+legend('l','r','h_l','h_r');
+title('hip-current','FontSize',16);
+% xlabel('时刻数','FontSize',16);
+ylabel('current/A','FontSize',16);
+grid on;
+set(gca,'XMinorGrid','on');
+set(gca,'YMinorGrid','on');
+
+subplot(2,1,2);
+plot(motor_data.current_actual_float(m:end,3));
+hold on;
+plot(-motor_data.current_actual_float(m:end,4));
+plot(-motor_data.torque_hope(m:end,3)/1.5);
+plot(-motor_data.torque_hope(m:end,4)/1.5);
+legend('l','r','h_l','h_r');
+title('knee-current','FontSize',16);
+xlabel('时刻数','FontSize',16);
+% ylabel('current/A','FontSize',16);
+grid on;
+set(gca,'XMinorGrid','on');
+set(gca,'YMinorGrid','on');
+

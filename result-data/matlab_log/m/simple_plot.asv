@@ -1,0 +1,28 @@
+clc;
+clear;
+load("/home/chen/Documents/knowledge/2wl_control/result-data/matlab_log/data.mat");
+m = 8344;
+subplot(2,1,1);
+plot(motor_data.current_actual_float(:,5));
+hold on;
+plot(-motor_data.current_actual_float(:,6));
+legend('l','r');
+title('hip-current','FontSize',16);
+% xlabel('时刻数','FontSize',16);
+ylabel('current/A','FontSize',16);
+grid on;
+set(gca,'XMinorGrid','on');
+set(gca,'YMinorGrid','on');
+
+subplot(2,1,2);
+plot(motor_data.current_actual_float(:,3));
+hold on;
+plot(-motor_data.current_actual_float(:,4));
+legend('l','r');
+title('knee-current','FontSize',16);
+xlabel('时刻数','FontSize',16);
+% ylabel('current/A','FontSize',16);
+grid on;
+set(gca,'XMinorGrid','on');
+set(gca,'YMinorGrid','on');
+

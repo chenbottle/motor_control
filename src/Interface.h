@@ -11,6 +11,9 @@ Use of this source code is governed by the MPL-2.0 license, see LICENSE.
 #include <iostream>
 #include "MotorControl.h"
 #include "imu_get_data.h"
+#include <lcm/lcm-cpp.hpp>
+#include "lcm-types/cpp/imu_data.hpp"
+#include "lcm-types/cpp/motor_data.hpp"
 
 extern "C" {
 #include "config.h"
@@ -27,6 +30,7 @@ public:
     void RecvFromDriver();
     void SendDriver(); 
     void getIMUdata();
+    void record_to_lcm();
 private:     
 
     //Driver
@@ -38,9 +42,15 @@ private:
 
     m_control _m_control;
 
+    //lcm_data
+    lcm::LCM lcm_motor;
+    lcm::LCM lcm_imu;
+    motor_data lcm_motor_data[6];
+    imu_data lcm_imu_data;
+
     std::mutex IMUData_mutex, remote_mutex, driver_mutex, rece_driver_mutex;
 };
 
-float ConvertByte2Float(unsigned char *pByte);
+// float ConvertByte2Float(unsigned char *pByte);
 
 #endif

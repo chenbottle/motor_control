@@ -1,0 +1,28 @@
+clc;
+clear;
+load("2.mat");
+m = 450;%pid 500 420 dynamic 290 320
+n = m + 340;
+subplot(3,1,1);
+h1 = plot(state_msgs.torque_hope(m:n,1));
+hold on;
+h2 = plot(state_msgs.torque_actual(m:n,1));
+title('joint-torque');
+ylabel('wheel/N¡¤m','FontSize',14);
+legend([h1,h2],'hope','actual');
+grid on;
+subplot(3,1,2);
+h3 = plot(state_msgs.torque_hope(m:n,3));
+hold on;
+h4 = plot(state_msgs.torque_actual(m:n,3));
+ylabel('knee/N¡¤m','FontSize',14);
+legend([h3,h4],'hope','actual');
+grid on;
+subplot(3,1,3);
+h5 = plot(state_msgs.torque_hope(m:n,5));
+hold on;
+h6 = plot(state_msgs.torque_actual(m:n,5));
+xlabel('Ê±¿ÌÊý','FontSize',14);
+ylabel('hip/N¡¤m','FontSize',14);
+legend([h5,h6],'hope','actual');
+grid on;

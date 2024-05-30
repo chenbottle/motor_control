@@ -391,7 +391,7 @@ void EtherCAT_Command_Set(motor_command *m_command)
             // MotorIDSetting(&Tx_Message[slave], 2, 1);
             // send_motor_ctrl_cmd(&Tx_Message[slave], 1,1, 0, 0, 0, 0, 0);
                             
-            // send_motor_ctrl_cmd(&Tx_Message[slave], 2,2, 0, 0, 0, 0, 0);
+            // send_motor_ctrl_cmd(&Tx_Message[slave], 2,2, 0, 0, 0, 0, 0.05);
 
             // send_motor_ctrl_cmd(&Tx_Message[slave], 4,3, 0, 0, 0, 0, 0);
 
@@ -400,7 +400,7 @@ void EtherCAT_Command_Set(motor_command *m_command)
             // send_motor_ctrl_cmd(&Tx_Message[slave], 6,5, 0, 0, 0, 0, 0);
 
             // set_motor_position(&Tx_Message[slave], 1,2, 360, 50, 100, 2);
-            // set_motor_speed(&Tx_Message[0], 1,1, 5, 500, 2);
+            set_motor_speed(&Tx_Message[0], 1,2, 5, 500, 2);
             // set_motor_speed(&Tx_Message[1], 2,2, 5, 500, 2);
             // set_motor_cur_tor(&Tx_Message[slave], 1,2, 0.5*100, 1, 1);
             // get_motor_parameter(&Tx_Message[slave],1, 2, 2);

@@ -121,6 +121,18 @@ void m_control::IMU_data_cout(){
     // imu->write();
 }
 
+void m_control::record_lcm_motor(motor_data* _motor_data){
+    for(int i = 0; i < row; i++){
+        for(int j = 0; j < col; j++){
+            _motor_data[i].motor_id[j] = m_body[i][j].motor_id;
+            _motor_data[i].angle_actual_rad[j] = m_body[i][j].angle_actual_rad;
+            _motor_data[i].speed_actual_rad[j] = m_body[i][j].speed_actual_rad;
+            _motor_data[i].current_actual_float[j] = m_body[i][j].current_actual_float;
+            _motor_data[i].temperature[j] = m_body[i][j].temperature;
+        }
+    }
+}
+
 motor_command* m_control::move(IMUState* _imu){  
     this->imu = _imu;
     row = ec_slavecount;
