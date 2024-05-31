@@ -11,6 +11,7 @@
 #include <lcm/lcm-cpp.hpp>
 #include "lcm-types/cpp/imu_data.hpp"
 #include "lcm-types/cpp/motor_data.hpp"
+#include "InverseKinematics.h"
 
 extern "C" {
 #include "config.h"
@@ -31,17 +32,23 @@ public:
     m_control();   
     ~m_control();  
     void get_data(EtherCAT_Msg *_msg);
-    motor_command* move(IMUState* _imu);
+    motor_command* move(IMUState *_imu);
     void motor_data_cout();  
     void IMU_data_cout(); 
     void record_lcm_motor(motor_data* _motor_data);
+    void calc();
 private:
     //IMU
-    IMUState* imu;
+    IMUState imu;
+
+    Poi_Move poi_move;
+
+    Ankle_Parallel_Mechanism ankle_parallel_mechanism;
 
     //motor
     int row = 6;
     int col = 6;
+    double poi_target,vel_target,tor_target;
     Motor_Send_Msg *msm_;
     motor_command *M_com;
     // OD_Motor_Msg **m_body; 

@@ -28,8 +28,10 @@ Interface::~Interface() {
 }
 
 void Interface::SendDriver(){               
-    // memcpy(msm_motor , twl_robot.move() , sizeof(msm_motor));             
-    EtherCAT_Run(_m_control.move(&imu.imuData));   
+    // memcpy(msm_motor , twl_robot.move() , sizeof(msm_motor));   
+    // driver_mutex.lock();          
+    EtherCAT_Run(_m_control.move(&imu.imuData));  
+    // driver_mutex.unlock(); 
 }
 
 void Interface::RecvFromDriver()
@@ -43,7 +45,10 @@ void Interface::RecvFromDriver()
 }
 
 void Interface::getIMUdata(){
+    // IMUData_mutex.lock();
     // imu.imuGet();
+    // imu._imuData = imu.imuData;
+    // IMUData_mutex.unlock();
 }
 
 void Interface::record_to_lcm(){

@@ -343,6 +343,7 @@ EtherCAT_Msg *EtherCAT_Data_Get()
  */
 void EtherCAT_Command_Set(motor_command *m_command)
 {
+    // set_motor_speed(&Tx_Message[0], 1,1, 5, 500, 1);
     int col = 6;
     // for (int i = 0;i < num;i++){
     //     // printf("slave:%d\tid:%d\tpoi:%f\tvel:%f\t",m_command[i].slave,m_command[i].m_id,m_command[i].poi,m_command[i].vel);
@@ -351,24 +352,27 @@ void EtherCAT_Command_Set(motor_command *m_command)
         for(int j = 0; j < col; j++){
             switch(m_command[i].Motor_Msg[j].pvt)
             {
-                case 0:
+                case 1:
                     set_motor_position(&Tx_Message[m_command[i].slave], m_command[i].Motor_Msg[j].m_id, 
                     m_command[i].Motor_Msg[j].m_id, m_command[i].Motor_Msg[j].poi, m_command[i].Motor_Msg[j].vel, 
                     m_command[i].Motor_Msg[j].cur_max, m_command[i].Motor_Msg[j]._ack);
-                    // printf("id:%d\tpoi:%f\n",m_command[i].m_id,m_command[i].poi);
+                    // printf("id:%d\tpoi:%f\n",m_command[i].Motor_Msg[j].m_id,m_command[i].Motor_Msg[j].poi);
                     break;
-                case 1:
+                case 2:
+                    // set_motor_speed(&Tx_Message[0], 1,1, 5, 500, 1);
                     set_motor_speed(&Tx_Message[m_command[i].slave], m_command[i].Motor_Msg[j].m_id, 
                     m_command[i].Motor_Msg[j].m_id, m_command[i].Motor_Msg[j].vel, m_command[i].Motor_Msg[j].cur_max,
                     m_command[i].Motor_Msg[j]._ack);
                     // printf("id:%d\tspeed:%f\n",m_command[i].Motor_Msg[j].m_id,m_command[i].Motor_Msg[j].vel);
                     // printf("slave:%d\t",m_command[i].slave);
+                    // printf("pvt:%d\t",m_command[i].Motor_Msg[j].pvt);
+                    // set_motor_speed(&Tx_Message[0], 1,1, 5, 500, 1);
                     break;
-                case 2:
+                case 3:
                     set_motor_cur_tor(&Tx_Message[m_command[i].slave], m_command[i].Motor_Msg[j].m_id, 
                     m_command[i].Motor_Msg[j].m_id, m_command[i].Motor_Msg[j].tor, 1, m_command[i].Motor_Msg[j]._ack);
                     break;
-                case 3:
+                case 4:
                     send_motor_ctrl_cmd(&Tx_Message[m_command[i].slave], m_command[i].Motor_Msg[j].m_id, 
                     m_command[i].Motor_Msg[j].m_id, m_command[i].Motor_Msg[j].KP, m_command[i].Motor_Msg[j].KD, 
                     m_command[i].Motor_Msg[j].poi, m_command[i].Motor_Msg[j].vel, m_command[i].Motor_Msg[j].tor);
@@ -377,36 +381,39 @@ void EtherCAT_Command_Set(motor_command *m_command)
                     break;
             }
         }
-    }
-    for (int slave = 0; slave < ec_slavecount; ++slave)
-    {
-
-        // for (int i = 1; i < 6; i++)
-        // {
-            //这里设置控制电机指令
-            // MotorIDReading(&Tx_Message[slave]);
-            // MotorCommModeReading(&Tx_Message[slave], 1);
-            // MotorSetting(&Tx_Message[slave], 1, 3);
-            // MotorIDReset(&Tx_Message[slave]);
-            // MotorIDSetting(&Tx_Message[slave], 2, 1);
-            // send_motor_ctrl_cmd(&Tx_Message[slave], 1,1, 0, 0, 0, 0, 0);
-                            
-            // send_motor_ctrl_cmd(&Tx_Message[slave], 2,2, 0, 0, 0, 0, 0.05);
-
-            // send_motor_ctrl_cmd(&Tx_Message[slave], 4,3, 0, 0, 0, 0, 0);
-
-            // send_motor_ctrl_cmd(&Tx_Message[slave], 5,4, 0, 0, 0, 0, 0);
-
-            // send_motor_ctrl_cmd(&Tx_Message[slave], 6,5, 0, 0, 0, 0, 0);
-
-            // set_motor_position(&Tx_Message[slave], 1,2, 360, 50, 100, 2);
-            set_motor_speed(&Tx_Message[0], 1,2, 5, 500, 2);
-            // set_motor_speed(&Tx_Message[1], 2,2, 5, 500, 2);
-            // set_motor_cur_tor(&Tx_Message[slave], 1,2, 0.5*100, 1, 1);
-            // get_motor_parameter(&Tx_Message[slave],1, 2, 2);
-
-            EtherCAT_Msg *slave_dest = (EtherCAT_Msg *)(ec_slave[slave + 1].outputs);
+        EtherCAT_Msg *slave_dest = (EtherCAT_Msg *)(ec_slave[i + 1].outputs);
             if (slave_dest)
-                *(EtherCAT_Msg *)(ec_slave[slave + 1].outputs) = Tx_Message[slave];
+                *(EtherCAT_Msg *)(ec_slave[i + 1].outputs) = Tx_Message[i];
     }
+    // for (int slave = 0; slave < ec_slavecount; ++slave)
+    // {
+
+    //     // for (int i = 1; i < 6; i++)
+    //     // {
+    //         //这里设置控制电机指令
+    //         // MotorIDReading(&Tx_Message[slave]);
+    //         // MotorCommModeReading(&Tx_Message[slave], 1);
+    //         // MotorSetting(&Tx_Message[slave], 1, 3);
+    //         // MotorIDReset(&Tx_Message[slave]);
+    //         // MotorIDSetting(&Tx_Message[slave], 2, 1);
+    //         // send_motor_ctrl_cmd(&Tx_Message[slave], 1,1, 0, 0, 0, 0, 0);
+                            
+    //         // send_motor_ctrl_cmd(&Tx_Message[slave], 2,2, 0, 0, 0, 0, 0.05);
+
+    //         // send_motor_ctrl_cmd(&Tx_Message[slave], 4,3, 0, 0, 0, 0, 0);
+
+    //         // send_motor_ctrl_cmd(&Tx_Message[slave], 5,4, 0, 0, 0, 0, 0);
+
+    //         // send_motor_ctrl_cmd(&Tx_Message[slave], 6,5, 0, 0, 0, 0, 0);
+
+    //         // set_motor_position(&Tx_Message[slave], 1,2, 360, 50, 100, 2);
+    //         // set_motor_speed(&Tx_Message[0], 1,2, 5, 500, 2);
+    //         // set_motor_speed(&Tx_Message[1], 2,2, 5, 500, 2);
+    //         // set_motor_cur_tor(&Tx_Message[slave], 1,2, 0.5*100, 1, 1);
+    //         // get_motor_parameter(&Tx_Message[slave],1, 2, 2);
+
+    //         EtherCAT_Msg *slave_dest = (EtherCAT_Msg *)(ec_slave[slave + 1].outputs);
+    //         if (slave_dest)
+    //             *(EtherCAT_Msg *)(ec_slave[slave + 1].outputs) = Tx_Message[slave];
+    // }
 }

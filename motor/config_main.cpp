@@ -4,7 +4,7 @@
 void Motor_Send_Msg::poi_control(int id,float poi_,float vel_,float cur_max_){
     int num_id =  id;
     M_Slave.Motor_Msg[num_id].m_id = id;
-    M_Slave.Motor_Msg[num_id].pvt = 0;
+    M_Slave.Motor_Msg[num_id].pvt = 1;
     M_Slave.Motor_Msg[num_id].poi = poi_;
     M_Slave.Motor_Msg[num_id].vel = vel_;
     M_Slave.Motor_Msg[num_id].tor = 0;
@@ -17,7 +17,7 @@ void Motor_Send_Msg::poi_control(int id,float poi_,float vel_,float cur_max_){
 void Motor_Send_Msg::vel_control(int id,float vel_,float cur_max_){
     int num_id =  id;
     M_Slave.Motor_Msg[num_id].m_id = num_id;
-    M_Slave.Motor_Msg[num_id].pvt = 1;
+    M_Slave.Motor_Msg[num_id].pvt = 2;
     M_Slave.Motor_Msg[num_id].poi = 0;
     M_Slave.Motor_Msg[num_id].vel = vel_;
     M_Slave.Motor_Msg[num_id].tor = 0;
@@ -30,7 +30,7 @@ void Motor_Send_Msg::vel_control(int id,float vel_,float cur_max_){
 void Motor_Send_Msg::tor_control(int id,float tor_){
     int num_id =  id;
     M_Slave.Motor_Msg[num_id].m_id = id;
-    M_Slave.Motor_Msg[num_id].pvt = 2;
+    M_Slave.Motor_Msg[num_id].pvt = 3;
     M_Slave.Motor_Msg[num_id].poi = 0;
     M_Slave.Motor_Msg[num_id].vel = 0;
     M_Slave.Motor_Msg[num_id].tor = tor_;
@@ -43,7 +43,7 @@ void Motor_Send_Msg::tor_control(int id,float tor_){
 void Motor_Send_Msg::tor_poi_control(int id, float KP_, float KD_, float poi_, float vel_, float tor_){
     int num_id =  id;
     M_Slave.Motor_Msg[num_id].m_id = id;
-    M_Slave.Motor_Msg[num_id].pvt = 3;
+    M_Slave.Motor_Msg[num_id].pvt = 4;
     M_Slave.Motor_Msg[num_id].KP = KP_;
     M_Slave.Motor_Msg[num_id].KD = KD_;
     M_Slave.Motor_Msg[num_id].poi = poi_;

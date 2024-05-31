@@ -23,13 +23,6 @@
 
 OD_Motor_Msg rv_motor_msg[6];
 
-// float uint_to_float(int x_int, float x_min, float x_max, int bits) {
-//     /// converts unsigned int to float, given range and number of bits ///
-//     float span = x_max - x_min;
-//     float offset = x_min;
-//     return ((float)x_int) * span / ((float)((1 << bits) - 1)) + offset;
-// }
-
 m_control::m_control(){
     // row = get_ec_slavecount();
     row = ec_slavecount;
@@ -44,6 +37,9 @@ m_control::m_control(){
             m_body[i][j].temperature = 0;
         }
     }
+    poi_target = 0;
+    vel_target = 0;
+    poi_target = 0;
     // m_body = new OD_Motor_Msg*[row];
     // for(int i = 0; i < row; i++){
     //     *(m_body + 1) = new OD_Motor_Msg[col];
@@ -61,28 +57,9 @@ m_control::~m_control(){
 
 void m_control::get_data(EtherCAT_Msg *_msg){
     row = ec_slavecount;   
-    
-    // printf("------------------------------------\n");
-    // for(int i = 0; i < ec_slavecount; i++){
-    //     printf("RX_slzve:%d\t",i);
-    //     for(int j = 0; j < 6; j++){
-    //         printf("motor_id[%d].data[0]:%x\t",_msg[i].motor[j].id,_msg[i].motor[j].data[0]);
-    //         printf("data[1]:%x\t",_msg[i].motor[j].data[1]);
-    //         printf("data[2]:%x\t",_msg[i].motor[j].data[2]);
-    //         printf("data[3]:%x\t",_msg[i].motor[j].data[3]);
-    //         printf("data[4]:%x\t",_msg[i].motor[j].data[4]);
-    //         printf("data[5]:%x\t",_msg[i].motor[j].data[5]);
-    //         printf("data[6]:%x\t",_msg[i].motor[j].data[6]);
-    //         printf("\n"); 
-    //     }     
-    // }
-    // printf("------------------------------------\n");
-    // memcpy(_ReceiveData,_msg,sizeof(_ReceiveData));
     for (int slave = 0; slave < row; slave++){
         for (int i = 0;i < col;i++){              
             if(_msg[slave].motor[i].id < 6 && _msg[slave].motor[i].id > 0){  
-                // printf("mbody_id:%d\t",m_body[slave][i].motor_id);
-                // printf("id:%d\t",_msg[slave].motor[i].id);
                 m_body[slave][i].motor_id = _msg[slave].motor[i].id;                
                 m_body[slave][i].angle_actual_int = _msg[slave].motor[i].data[1] << 8 | _msg[slave].motor[i].data[2];
                 m_body[slave][i].speed_actual_int = _msg[slave].motor[i].data[3] << 4 | (_msg[slave].motor[i].data[4] & 0xF0) >> 4;
@@ -93,15 +70,10 @@ void m_control::get_data(EtherCAT_Msg *_msg){
                 m_body[slave][i].current_actual_float = uint_to_float(m_body[slave][i].current_actual_int, I_MIN_8120, I_MAX_8120, 12);
                 m_body[slave][i].temperature = (_msg[slave].motor[i].data[6] - 50) / 2;                     
             }             
-            // for(int j = 0;j < 8; j++){
-            //     // cout << "data[" << i << "]:" << hex << _ReceiveData[slave].motor[i].data[j] << "\t";
-            //     printf("motor[%d]data[%d]:%x\t",i,j,_ReceiveData[slave].motor[i].data[j]);
-            // }
-            // cout << endl;
         }
     } 
-    motor_data_cout();  
-    IMU_data_cout();  
+    // motor_data_cout();  
+    // IMU_data_cout();  
 }
 
 void m_control::motor_data_cout(){
@@ -118,7 +90,17 @@ void m_control::motor_data_cout(){
 }
 
 void m_control::IMU_data_cout(){
-    // imu->write();
+    printf("roll:%f\t", imu.roll);
+    printf("pitch:%f\t", imu.pitch);
+    printf("yaw:%f\n", imu.yaw);
+    for(int i = 0; i < 3; i++){        
+        printf("acc[%d]:%f\t", i, imu.acceleration[i]);   
+    }
+    printf("\n");   
+    for(int i = 0; i < 3; i++){        
+        printf("angle_speed[%d]:%f\t", i, imu.angularVelo[i]);      
+    }
+    printf("\n");   
 }
 
 void m_control::record_lcm_motor(motor_data* _motor_data){
@@ -133,9 +115,24 @@ void m_control::record_lcm_motor(motor_data* _motor_data){
     }
 }
 
-motor_command* m_control::move(IMUState* _imu){  
-    this->imu = _imu;
+void m_control::calc(){
+    poi_target = poi_move.poi_move(0, 360, 0.5, 0.002);
+}
+
+motor_command* m_control::move(IMUState *_imu){  
+    IMUState *p = _imu;
+    imu = *p;
     row = ec_slavecount;
+    calc();
+    static bool if_ok = 0;
+    if(!if_ok){
+        ankle_parallel_mechanism.get_file_data();        
+        if_ok = 1;
+    }  
+    // double ql,qr;
+    // ankle_parallel_mechanism.get_angle(-0.111545, 0, ql, qr);
+    // cout << "ql:" << ql << "\t";
+    // cout << "qr:" << qr << "\n"; 
     //力位混控
     // msm_[0].tor_poi_control(2, 0, 0, 0, 0, 0.05);
     // msm_[1].tor_control(2,0*100);
@@ -149,17 +146,16 @@ motor_command* m_control::move(IMUState* _imu){
     // msm_[5].tor_control(5,0*100); 
 
     //位置控制
-    // msm_[0].poi_control(2,0,0.5*100,500); 
+    // msm_[0].poi_control(1,poi_target,0.5*100,500); 
     // msm_[2].poi_control(2,100,50,500);    
     // msm_[3].poi_control(3,0,50,500);
     // msm_[4].poi_control(4,0,50,500); 
     // msm_[5].poi_control(5,0,50,500);
 
-    //速度控制
-    msm_[0].vel_control(2,-10,500);
-    // msm_[1].vel_control(1,0.5*10,500);
-    // msm_[0][1].vel_control(1,10,500);
-    
+    // 速度控制
+    // msm_[0].vel_control(2,0*10,500);
+    // msm_[0].vel_control(1,0*10,500);
+    // msm_[0][1].vel_control(1,10,500);    
     // msm_[4].vel_control(4,50,500);
     // msm_[5].vel_control(5,50,500);
     // cout << "row:" << row << endl;

@@ -13,7 +13,7 @@ public:
         for(int i = 0; i < 6; i++){
             M_Slave.slave = 0;
             M_Slave.Motor_Msg[i].m_id = 0;
-            M_Slave.Motor_Msg[i].pvt = 4;
+            M_Slave.Motor_Msg[i].pvt = 0;
             M_Slave.Motor_Msg[i].KP = 0;
             M_Slave.Motor_Msg[i].KD = 0;
             M_Slave.Motor_Msg[i].poi = 0;
